@@ -1,0 +1,7 @@
+output ["yCoor = "++format(yCoor)++";\n","S = "++format(S)++";\n","D = "++format(D)++";\n","objective = "++format(objective)++";\n"];
+set of int: FLIGHT = 1..20;
+int: objective;
+int: D;
+set of int: AIRLINE = 1..3;
+array [AIRLINE] of int: S;
+array [FLIGHT] of int: yCoor;
