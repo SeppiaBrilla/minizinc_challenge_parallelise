@@ -23,7 +23,7 @@ This is the repository for the parallelise CP solver project. The project struct
             "..."
         }
     * **features.csv**: a csv file with all the fzn2feat instance features.
-    * **datasets**: a sub-folder with all the csv files that can be used to train the ml models. they are named as ```solver_c1c2``` where c1 and c2 are number of cores and c1 < c2. Each csv has all the values of ```features.csv``` plus a y column (0 / 1) for preduction.
+    * **datasets**: a sub-folder with all the csv files that can be used to train the ml models. they are named as ```solver_c1c2.csv``` where c1 and c2 are number of cores and c1 < c2. Each csv has all the values of ```features.csv``` plus a y column (0 / 1) for preduction.
     * **figures**: a sub-folder with all the generated figures.
     * **minizinc_instances**: a sub-folder with all the instances and model used in the projects.
 
