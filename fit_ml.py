@@ -627,7 +627,9 @@ def main(args):
     model.fit(x_train[numeric_cols], y_train)
     y_pred = model.predict(x_test[numeric_cols])
     accuracy = accuracy_score(y_test, y_pred)
-    majority_accuracy = accuracy_score(y_test, np.ones_like(y_test))
+    count = (list(y_train).count(0), list(y_train).count(1))
+    majority = np.zeros_like if count[0] > count[1] else np.ones_like
+    majority_accuracy = accuracy_score(y_test, majority(y_test))
     print("test set accuracy:", accuracy)
     print("majority accuracy:", majority_accuracy)
 
