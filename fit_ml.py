@@ -540,6 +540,7 @@ def main(args):
     random_seed = args.random_seed
     problem_unaware = args.problem_unaware
     pca_type = args.pca
+    json_out = args.json_output
 
     set_seed(random_seed)
 
@@ -620,8 +621,7 @@ def main(args):
     best_score_idx = np.argmax(scores)
 
     best_parameters = hyperparams[best_score_idx]
-    print("best found hyperparams:", best_parameters)
-    print("with score:", scores[best_score_idx])
+    
     model = model_class(**best_parameters)
     numeric_cols = x_train.select_dtypes(include=['number']).columns
     model.fit(x_train[numeric_cols], y_train)
@@ -630,8 +630,14 @@ def main(args):
     count = (list(y_train).count(0), list(y_train).count(1))
     majority = np.zeros_like if count[0] > count[1] else np.ones_like
     majority_accuracy = accuracy_score(y_test, majority(y_test))
-    print("test set accuracy:", accuracy)
-    print("majority accuracy:", majority_accuracy)
+    if not json_out:
+        print("best found hyperparams:", best_parameters)
+        print("with score:", scores[best_score_idx])
+        print("test set accuracy:", accuracy)
+        print("majority accuracy:", majority_accuracy)
+    else:
+        import json
+        print(json.dumps({"best_hyperparameters": best_parameters, "train_score": scores[best_score_idx], "test_accuracy": accuracy, "majority_accuracy": majority_accuracy}))
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(
@@ -645,6 +651,7 @@ if __name__ == '__main__':
     parser.add_argument('-pu', '--problem-unaware',  action='store_false', help='If the validation and test set should be problem aware.')
     parser.add_argument('-p', '--pca', type=str, default='None', help='Whether or not to apply PCA decomposition. If None then nothing happens, otherwise it must contain the number of components to decompose to or mle for maximum likelyhood decomposition. Default None.')
     parser.add_argument('-d', '--data', type=str, required=True, help='The .csv file that contains the data to use.').completer = FilesCompleter(allowednames=["*.csv"])
+    parser.add_argument('-j', '--json-output', action='store_true', help='The if to use or not json as output format.')
 
     argcomplete.autocomplete(parser)
     args = parser.parse_args()
