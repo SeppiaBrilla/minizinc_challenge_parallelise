@@ -1,6 +1,7 @@
 import json
 from scoring import scoring_function
 from helper import re_arrange, predict_used_alg
+from tqdm import tqdm
 import sys
 
 PROBLEMS = ['work-task-variation', 'product-and-shelves', 'tsptw', 'neighbours-rect', 'is', 'community-detection', 'word', 'foxgeesecorn', 'yumi-dynamic', 'harmony', 'cc', 'concert-hall-cap', 'skill', 'cgt', 'mondoku-gcc-model-balance', 'efm', 'aircraft', 'triangular', 'atsp', 'black-hole', 'ctw', 'trains', 'FBD1', 'gt-sort', 'model4', 'accap', 'tower', 'hoist-benchmark', 'graph', 'monitor', 'group', 'TinyCVRP', 'JSP0', 'compression', 'wcsp', 'hitori', 'stripboard', 'portal', 'ihtc-2024-marte', 'peaceable']
@@ -21,11 +22,8 @@ def onevone(probs, performance_data, solvers):
         scores[str(s2)] += score_2
     return scores
 
-def scoring(probs, performance_data):
-    from tqdm import tqdm
+def scoring(probs, opts, performance_data):
     solvers = []
-    with open("all_options.json") as f:
-        opts = json.load(f)
     for opt in opts:
         solvers.append([tuple(o) for o in opt])
     scores = {}
@@ -54,12 +52,13 @@ def scoring(probs, performance_data):
 
 def main():
     argv = sys.argv
-    if len(argv) < 4:
-        print(f'usage: python {argv[0]} <problems-to-use> <json-execution-results-file> <json-results-save-file>')
+    if len(argv) < 5:
+        print(f'usage: python {argv[0]} <problems-to-use> <options_file> <json-execution-results-file> <json-results-save-file>')
         return
     problems_to_use = argv[1]
-    results_file = argv[2]
-    save_file = argv[3]
+    options_file = argv[2]
+    results_file = argv[3]
+    save_file = argv[4]
 
     if problems_to_use == '2024':
         test_problems = PROBLEMS_2024
@@ -77,7 +76,9 @@ def main():
     probs = [(p['model'], p['name']) for p in performance_data['cp-sat']['1'] if p['model'] in test_problems]
     performance_data = re_arrange(performance_data)
 
-    scores = scoring(probs, performance_data)
+    with open(options_file) as f:
+        options = json.load(f)
+    scores = scoring(probs, options, performance_data)
 
     for k, v in scores.items():
         if len(v['l']) == 0:
