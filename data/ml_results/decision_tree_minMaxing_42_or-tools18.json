@@ -1,0 +1,1 @@
+{"best_hyperparameters": {"criterion": "entropy", "max_depth": 10, "max_features": "log2", "max_leaf_nodes": 50, "min_samples_leaf": 4, "min_samples_split": 15, "min_weight_fraction_leaf": 0.05, "splitter": "best"}, "train_score": 0.9185714285714287, "test_accuracy": 0.775, "majority_accuracy": 0.65}
