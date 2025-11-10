@@ -7,7 +7,7 @@ import argparse
 import argcomplete
 from argcomplete.completers import FilesCompleter
 from helper import set_seed, get_hyperparameters, get_model_class, Cross_validatior
-from scalers import PCAPreprocessor, get_scaler
+from scalers import get_scaler
 
 def is_valid_type(pca_type:str) -> bool:
     if pca_type == 'None' or pca_type == 'mle':
@@ -26,7 +26,6 @@ def main(args):
     cv = args.cv
     random_seed = args.random_seed
     problem_unaware = args.problem_unaware
-    pca_type = args.pca
     json_out = args.json_output
 
     set_seed(random_seed)
@@ -41,10 +40,6 @@ def main(args):
         test_data = data[data['problem'].isin(test_problems)]
     else:
         train_data, test_data = train_test_split(data, test_size=test_size)
-
-    if not is_valid_type(pca_type):
-        print("wrong pca input, use --help for help")
-        return
 
     train_data = train_data.drop(columns=['name'])
     test_data = test_data.drop(columns=['name'])
@@ -63,21 +58,6 @@ def main(args):
     scaler.fit(x_train[numeric_cols])
     x_train[numeric_cols] = scaler.transform(x_train[numeric_cols])
     x_test[numeric_cols] = scaler.transform(x_test[numeric_cols])
-
-    if False:
-        contrastive = ContrastiveLearningFeatures()
-        contrastive.fit(x_train, y_train, not problem_unaware)
-        non_numeric_x_train = x_train.select_dtypes(exclude=['number'])
-        non_numeric_x_test = x_test.select_dtypes(exclude=['number'])
-        x_train_feat = contrastive.transform(x_train[numeric_cols])
-        x_test_feat = contrastive.transform(x_test[numeric_cols])
-        x_train = pd.concat([non_numeric_x_train, x_train_feat], axis=1)
-        x_test = pd.concat([non_numeric_x_test, x_test_feat], axis=1)
-
-    pca_preprocessor = PCAPreprocessor(pca_type)
-    pca_preprocessor.fit(x_train)
-    x_train = pca_preprocessor.transform(x_train)
-    x_test = pca_preprocessor.transform(x_test)
 
     if model_name == 'dt':
         model_name = 'decisionTree'
@@ -130,13 +110,12 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(
                     prog='fit_ml',
                     description='fit a classifier that predicts if a solver will score better with parallelisation enabled.')
-    parser.add_argument('-m', '--model', type=str, choices=['decisionTree', 'dt', 'gradientBoost', 'gb', 'neuralNetwork','nn', 'supportVectorMachine', 'svm', 'kmeans', 'km','knn', 'kn', 'prox', 'sgd'], required=True, help='The model to fit.')
+    parser.add_argument('-m', '--model', type=str, choices=['decisionTree', 'dt', 'gradientBoost', 'gb', 'neuralNetwork','nn', 'supportVectorMachine', 'svm', 'kmeans', 'km','knn', 'kn', 'sgd'], required=True, help='The model to fit.')
     parser.add_argument('-s', '--scaler', type=str, choices=['standard', 'std', 'minMax', 'mm', 'None'], required=False, default='std', help='How to scale the data. None does not scale it.')
     parser.add_argument('-t', '--test-size', type=float, required=False, default=.2, help='The amount of data to reserve to the test process. default to 20%%.')
     parser.add_argument('-c', '--cv', type=int, required=False, default=5, help='Number of cross-validation steps to perform.')
     parser.add_argument('-r', '--random-seed', type=int, required=False, default=42, help='Random seed to use.')
     parser.add_argument('-pu', '--problem-unaware',  action='store_false', help='If the validation and test set should be problem aware.')
-    parser.add_argument('-p', '--pca', type=str, default='None', help='Whether or not to apply PCA decomposition. If None then nothing happens, otherwise it must contain the number of components to decompose to or mle for maximum likelyhood decomposition. Default None.')
     parser.add_argument('-d', '--data', type=str, required=True, help='The .csv file that contains the data to use.').completer = FilesCompleter(allowednames=["*.csv"])
     parser.add_argument('-j', '--json-output', action='store_true', help='The if to use or not json as output format.')
 

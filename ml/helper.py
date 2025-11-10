@@ -7,7 +7,6 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 from sklearn.svm import SVC
 from sklearn.linear_model import SGDClassifier
-from classification_models.closer import Closer
 from classification_models.kmeans_classifier import KmeansClassifier
 from classification_models.knn_classifier import KnnClassifier
 from classification_models.neural_network import NN
@@ -15,7 +14,7 @@ from sklearn.base import BaseEstimator, clone
 from sklearn.metrics import accuracy_score
 from sklearn.model_selection import cross_val_score
 
-ModelTypes = Literal['decisionTree','gradientBoost', 'neuralNetwork', 'supportVectorMachine', 'kmeans', 'knn', 'prox', 'sgd']
+ModelTypes = Literal['decisionTree','gradientBoost', 'neuralNetwork', 'supportVectorMachine', 'kmeans', 'knn', 'sgd']
 
 def set_seed(seed=42):
     random.seed(seed)                     # Python built-in random
@@ -113,8 +112,6 @@ def get_model_class(model_type:ModelTypes) -> type:
         return KmeansClassifier
     if model_type == 'knn':
         return KnnClassifier
-    if model_type == 'prox':
-        return Closer
     if model_type == 'sgd':
         return SGDClassifier
 

@@ -27,42 +27,35 @@ class NN(BaseEstimator, ClassifierMixin):
         nn_layers = []
         for i in range(1, len(self.layers)):
             nn_layers.append(nn.Linear(self.layers[i-1], self.layers[i]))
-            if i < len(self.layers) - 1:  # activation except last layer
+            if i < len(self.layers) - 1:
                 nn_layers.append(nn.LeakyReLU())
         self.nn = nn.Sequential(*nn_layers)
 
     def fit(self, X: pd.DataFrame, y: pd.DataFrame, verbose=False):
-        # Convert to numpy arrays
         X_np = X.values if isinstance(X, pd.DataFrame) else np.array(X)
         y_np = y.values if isinstance(y, pd.DataFrame) else np.array(y)
 
-        # Split 90% train, 10% validation
         X_train, X_val, y_train, y_val = train_test_split(
             X_np, y_np, test_size=0.1, stratify=y_np
         )
 
-        # Convert to tensors
         X_train = torch.tensor(X_train, dtype=torch.float32)
         y_train = torch.tensor(y_train, dtype=torch.float32).view(-1, 1)
         X_val = torch.tensor(X_val, dtype=torch.float32)
         y_val = torch.tensor(y_val, dtype=torch.float32).view(-1, 1)
 
-        # Prepare DataLoader
         train_dataset = torch.utils.data.TensorDataset(X_train, y_train)
         train_loader = torch.utils.data.DataLoader(
             train_dataset, batch_size=self.batch_size, shuffle=True
         )
 
-        # Loss and optimizer
         criterion = nn.BCEWithLogitsLoss()
         optimizer = optim.Adam(self.nn.parameters(), lr=self.lr)
 
-        # Early stopping variables
         best_loss = float("inf")
         best_model = deepcopy(self.nn.state_dict())
         epochs_no_improve = 0
 
-        # Training loop
         for epoch in range(self.n_epochs):
             self.nn.train()
             tot_loss = []
@@ -74,7 +67,6 @@ class NN(BaseEstimator, ClassifierMixin):
                 optimizer.step()
                 tot_loss.append(float(loss.detach()))
 
-            # Validation loss
             self.nn.eval()
             with torch.no_grad():
                 val_outputs = self.nn(X_val)
