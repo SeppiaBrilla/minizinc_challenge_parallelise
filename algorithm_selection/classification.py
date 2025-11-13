@@ -115,7 +115,7 @@ if __name__ == '__main__':
     parser.add_argument('-t', '--test-size', type=float, required=False, default=.2, help='The amount of data to reserve to the test process. default to 20%%.')
     parser.add_argument('-c', '--cv', type=int, required=False, default=5, help='Number of cross-validation steps to perform.')
     parser.add_argument('-r', '--random-seed', type=int, required=False, default=42, help='Random seed to use.')
-    parser.add_argument('-pu', '--problem-unaware',  action='store_false', help='If the validation and test set should be problem aware.')
+    parser.add_argument('-pa', '--problem-aware',  action='store_false', help='If the validation and test set should be problem aware.')
     parser.add_argument('-d', '--data', type=str, required=True, help='The .csv file that contains the data to use.').completer = FilesCompleter(allowednames=["*.csv"])
     parser.add_argument('-j', '--json-output', action='store_true', help='The if to use or not json as output format.')
 
