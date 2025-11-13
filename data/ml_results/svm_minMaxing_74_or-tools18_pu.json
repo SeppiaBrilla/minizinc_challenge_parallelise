@@ -1,0 +1,1 @@
+{"best_hyperparameters": {"C": 0.01, "class_weight": null, "coef0": 1.0, "degree": 5, "gamma": "scale", "kernel": "poly", "max_iter": 100000, "shrinking": true}, "train_score": 0.8681451612903226, "test_accuracy": 0.825, "majority_accuracy": 0.775}
