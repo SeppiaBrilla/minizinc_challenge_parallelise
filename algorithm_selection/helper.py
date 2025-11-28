@@ -193,6 +193,6 @@ def predict_used_alg(pred:list, performance_data:dict) -> tuple[str,str]:
     else:
         raise Exception(f'Unknown search {_s}')
     if len(best_algs) == 0:
-        return ('cp-sat','1')
+        return algs[0]
     alg = min([(a, perfs[a]['time']) for a in best_algs], key=lambda x: x[1])[0]
     return alg

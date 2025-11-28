@@ -25,7 +25,7 @@ def main(args):
     test_size = args.test_size
     cv = args.cv
     random_seed = args.random_seed
-    problem_unaware = args.problem_unaware
+    problem_aware = args.problem_aware
     json_out = args.json_output
 
     set_seed(random_seed)
@@ -34,7 +34,7 @@ def main(args):
     problems = data['problem'].unique().tolist()
     train_problems = None
 
-    if problem_unaware:
+    if problem_aware:
         train_problems, test_problems = train_test_split(problems, test_size=test_size)
         train_data = data[data['problem'].isin(train_problems)]
         test_data = data[data['problem'].isin(test_problems)]
