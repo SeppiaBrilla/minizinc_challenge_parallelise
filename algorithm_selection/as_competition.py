@@ -12,8 +12,7 @@ PROBLEMS = ['work-task-variation', 'product-and-shelves', 'tsptw', 'neighbours-r
 PROBLEMS_2024 = ['accap', 'aircraft', 'ctw', 'community-detection', 'compression', 'concert-hall-cap', 'foxgeesecorn', 'graph', 'harmony', 'hoist-benchmark', 'monitor', 'neighbours-rect', 'efm', 'peaceable', 'portal', 'TinyCVRP', 'trains', 'triangular', 'word', 'yumi-dynamic']
 PROBLEMS_2025 = ['work-task-variation', 'product-and-shelves', 'tsptw', 'is', 'cc', 'skill', 'cgt', 'mondoku-gcc-model-balance', 'atsp', 'black-hole', 'FBD1', 'gt-sort', 'model4', 'tower', 'group', 'JSP0', 'wcsp', 'hitori', 'stripboard', 'ihtc-2024-marte']
 
-def scoring(probs, performance_data, features:pd.DataFrame, p:Kmeans_AS, portfolios:list[list[tuple[str,int]]]):
-    solvers = [[('cp-sat',1)], [('cp-sat',8)], [('chuffed',1)], [('CPLEX',1)], [('gecode',1)], [('Picat',1)]]
+def scoring(probs, performance_data, features:pd.DataFrame, p:Kmeans_AS, portfolios:list[list[tuple[str,int]]], solvers):
 
     p_str = 'portfolio'
 
@@ -75,6 +74,12 @@ k is the number of elements to use with the kmeans as.""")
     with open(performance_file) as f:
         performance_data = json.load(f)
 
+    solvers = []
+    for solver in performance_data.keys():
+        for cores in performance_data[solver]:
+            if cores in ['1', '8'] and not solver in ['gecode', 'portfolio']:
+                solvers.append([(solver, int(cores))])
+
     with open(features_file) as f:
         features = pd.read_csv(features_file)
 
@@ -111,13 +116,17 @@ k is the number of elements to use with the kmeans as.""")
             train_scores.append(instance_scores)
     train_scores = np.array(train_scores)
     train_features = train_features.drop(train_features[train_features['name'].isin(to_drop)].index)
-    train_features = train_features.drop(columns=['problem','name']).values
+    train_features = train_features.drop(columns=['problem','name'])
+    scaler = MinMaxScaler()
+    numeric_cols = test_features.select_dtypes(include=['number']).columns
+    train_features = scaler.fit_transform(train_features.loc[:,numeric_cols])
+    test_features.loc[:,numeric_cols] = scaler.transform(test_features.loc[:, numeric_cols])
     assert isinstance(train_features, np.ndarray)
     as_model.train(train_features, train_scores)
     probs = [(p['model'], p['name']) for p in performance_data['cp-sat']['1'] if p['model'] in test_problems]
     performance_data = re_arrange(performance_data)
 
-    scores = scoring(probs, performance_data, test_features, as_model, portfolios)
+    scores = scoring(probs, performance_data, test_features, as_model, portfolios, solvers)
     for solver, score in sorted(scores.items(), key=lambda x: x[1], reverse=True):
         print(solver, ':', score)
 
