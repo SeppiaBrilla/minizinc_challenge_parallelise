@@ -1,1 +1,0 @@
-{"best_hyperparameters": {"learning_rate": 0.01, "max_depth": 3, "max_features": null, "min_samples_leaf": 2, "min_samples_split": 10, "n_estimators": 300, "subsample": 1.0}, "train_score": 0.7038306451612903, "test_accuracy": 0.7, "majority_accuracy": 0.55}

@@ -1,1 +1,0 @@
-{"best_hyperparameters": {"criterion": "gini", "max_depth": null, "max_features": "sqrt", "max_leaf_nodes": 50, "min_samples_leaf": 1, "min_samples_split": 15, "min_weight_fraction_leaf": 0.0, "splitter": "best"}, "train_score": 0.7376190476190476, "test_accuracy": 0.6, "majority_accuracy": 0.175}
